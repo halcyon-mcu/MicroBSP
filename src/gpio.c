@@ -5,8 +5,10 @@
 
 // SAFETY: This assumes that SYS1_Init has been called beforehand.
 void GPIO_Init() {
+  // FIXME: This doesn't seem to affect anything.
   // Set PS[16] to power on all quadrants of GPIO (enable clk)
-  PCR_ClearPowerDown(0, 0b1111);
+  PCR_ClearPowerDown(16, 0b1111);
+
   // Start GIO
   setbit(uint32_t, GPIO_BASE + GPIO_GCR0_OFFSET, 0, 1);
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdint.h>
+#include <stdbool.h>
+
 // Refer to 1303 of TRM for initialization steps
 
 #define GPIO_BASE 0xFFF7BC00
@@ -18,6 +21,17 @@
 #define GPIO_PULDISB_OFFSET 0x6C
 
 void GPIO_Init();
-void GPIO_SetDirection();
-void GPIO_SetPulseDisabled();
-void GPIO_SetOpenDrain();
+
+typedef unsigned int gpio_pin_t;
+
+typedef enum {
+	// Interpretation on page 1323
+	// Ensure you read the register documentation to see what each value maps to
+	GPIO_DIR_INPUT = 0,
+	GPIO_DIR_OUTPUT = 1,
+} gpio_dir_t;
+
+void GPIO_SetDirection(gpio_pin_t pin, gpio_dir_t pinDir);
+void GPIO_SetPullDisabled(gpio_pin_t pin, bool isDisabled);
+void GPIO_SetOpenDrain(gpio_pin_t pin, bool isOpenDrain);
+void GPIO_SetHigh(gpio_pin_t pin, bool isHigh);

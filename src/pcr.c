@@ -1,7 +1,7 @@
 #include "pcr.h"
 
-#include "types.h"
 #include "util.h"
+#include <stdint.h>
 
 #define QUADS_PER_REGISTER 4
 

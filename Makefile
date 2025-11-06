@@ -18,12 +18,13 @@ CFLAGS = -mcpu=$(MCU) $(FPU) -mthumb \
          -I$(INC_DIR) \
          -Wall -Wextra \
          -g -O0 \
-         -ffunction-sections -fdata-sections
+         -ffunction-sections -fdata-sections \
+         -ffreestanding
 
 LDFLAGS = -T$(LINKER_SCRIPT) \
         -Wl,--gc-sections \
         -Wl,-Map=$(BUILD_DIR)/output.map \
-        -nostdlib
+        -nostdlib -ffreestanding
 
 C_SOURCES = $(wildcard $(SRC_DIR)/*.c)
 ASM_SOURCES = $(wildcard $(SRC_DIR)/*.s)

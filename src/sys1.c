@@ -1,6 +1,6 @@
 #include "sys1.h"
 
-#include "types.h"
+#include <stdint.h>
 #include "util.h"
 
 void SYS1_Init() {

@@ -3,6 +3,13 @@
 #include "util.h"
 #include <stdint.h>
 
+#define PCR_BASE 0xFFFFE000
+
+#define PCR_PSPWRDWNCLR0_OFFSET 0xA0
+#define PCR_PSPWRDWNCLR1_OFFSET 0xA4
+#define PCR_PSPWRDWNCLR2_OFFSET 0xA8
+#define PCR_PSPWRDWNCLR3_OFFSET 0xAC
+
 #define QUADS_PER_REGISTER 4
 
 /* clang-format off */

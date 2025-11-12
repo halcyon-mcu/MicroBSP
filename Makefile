@@ -1,6 +1,7 @@
 # File Setup
 SRC_DIR = src
 INC_DIR = include
+EXAMPLES_DIR = examples
 BUILD_DIR = build
 LINKER_SCRIPT = linker/rm4x.ld
 
@@ -10,6 +11,7 @@ CC = $(PREFIX)gcc
 AS = $(PREFIX)as
 LD = $(PREFIX)ld
 OBJCOPY = $(PREFIX)objcopy
+AR = $(PREFIX)ar
 
 MCU = cortex-r4
 FPU = -mfloat-abi=hard -mfpu=vfpv3-d16
@@ -32,26 +34,32 @@ ASM_SOURCES = $(wildcard $(SRC_DIR)/*.s)
 OBJECTS = $(C_SOURCES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o) \
           $(ASM_SOURCES:$(SRC_DIR)/%.s=$(BUILD_DIR)/%.o)
 
-TARGET = $(BUILD_DIR)/firmware
+LIB_TARGET = $(BUILD_DIR)/librm4x.a
 
-all: $(BUILD_DIR) $(TARGET).elf $(TARGET).bin
+# Build the library
+lib: $(LIB_TARGET)
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.s
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.s | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TARGET).elf: $(OBJECTS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) -o $@
+$(LIB_TARGET): $(OBJECTS)
+	$(AR) rcs $@ $^
 
-$(TARGET).bin: $(TARGET).elf
-	$(OBJCOPY) -O binary $< $@
+# Build a specific example: make example EXAMPLE=blinker
+example: $(LIB_TARGET)
+ifndef EXAMPLE
+	$(error EXAMPLE not specified. Usage: make example EXAMPLE=blink)
+endif
+	$(CC) $(CFLAGS) $(LDFLAGS) $(EXAMPLES_DIR)/$(EXAMPLE).c $(LIB_TARGET) -o $(BUILD_DIR)/$(EXAMPLE).elf
+	$(OBJCOPY) -O binary $(BUILD_DIR)/$(EXAMPLE).elf $(BUILD_DIR)/$(EXAMPLE).bin
 
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all clean
+.PHONY: lib example clean

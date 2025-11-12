@@ -50,6 +50,7 @@ void SCI_SyncTransmitByte(uint8_t data) {
 	while (!isTransmitReady()) {
 		// Wait
 	}
+
 	writeByte(data);
 }
 
@@ -57,6 +58,7 @@ uint8_t SCI_SyncReceiveByte() {
 	while (!isReceiveReady()) {
 		// Wait
 	}
+
 	return readByte();
 }
 

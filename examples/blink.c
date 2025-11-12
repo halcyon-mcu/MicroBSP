@@ -11,7 +11,12 @@ int main() {
 	GPIO_SetOpenDrain(GPIOB_1, false);
 	GPIO_SetHigh(GPIOB_1, true);
 
-	// uint8_t byte = SCI_SyncReceiveByte();
+	// bool toggle = false;
+	// while (true) {
+	// 	uint8_t byte = SCI_SyncReceiveByte();
+	// 	GPIO_SetHigh(GPIOB_1, toggle);
+	// 	toggle = !toggle;
+	// }
 
 	return 0;
 }

@@ -6,6 +6,12 @@ extern "C" {
 
 #include <stdint.h>
 
+/**
+ * SCI Initialization function. This must be called a single time upon reset.
+ *
+ * # SAFETY
+ * This assumes that SYS1_Init has been called beforehand.
+ */
 void SCI_Init();
 
 unsigned int SCI_GetFlags();

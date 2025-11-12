@@ -14,13 +14,20 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
+            - name: Cache ARM toolchain
+              uses: actions/cache@v4
+              id: cache-toolchain
+              with:
+                  path: |
+                      /usr/bin/arm-none-eabi-*
+                      /usr/lib/gcc/arm-none-eabi
+                      /usr/arm-none-eabi
+                  key: ${{ runner.os }}-arm-toolchain-${{ hashFiles('.github/workflows/*.yml') }}
+
             - name: Install ARM GCC toolchain
               run: |
                   sudo apt-get update
                   sudo apt-get install -y gcc-arm-none-eabi
-
-            - name: Install Make
-              run: sudo apt-get install -y make
 
             - name: Build project
               run: make

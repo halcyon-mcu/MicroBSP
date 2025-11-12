@@ -15,14 +15,14 @@
 void SCI_Init();
 
 // Get the raw flags from SCI. Mostly meant for internal use.
-#define SCI_FLAGS_RXRDY_MASK  0b0000000001
-#define SCI_FLAGS_TXRDY_MASK  0b000000001
-#define SCI_FLAGS_BUSY_MASK   0b0001
-#define SCI_FLAGS_IDLE_MASK   0b001
+#define SCI_FLAGS_RXRDY_MASK 0b0000000001
+#define SCI_FLAGS_TXRDY_MASK 0b000000001
+#define SCI_FLAGS_BUSY_MASK 0b0001
+#define SCI_FLAGS_IDLE_MASK 0b001
 #define SCI_FLAGS_WAKEUP_MASK 0b01
-#define SCI_FLAGS_BRKDT_MASK  0b1
-unsigned int SCI_GetFlags();
+#define SCI_FLAGS_BRKDT_MASK 0b1
 
+unsigned int SCI_GetFlags();
 
 void SCI_SyncTransmitByte(uint8_t data);
 uint8_t SCI_SyncReceiveByte();

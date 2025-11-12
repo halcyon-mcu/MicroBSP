@@ -28,12 +28,14 @@ static uint8_t readByte() {
 }
 
 void SCI_SyncTransmitByte(uint8_t data) {
-	while (!isTransmitReady());
+	while (!isTransmitReady())
+		;
 	writeByte(data);
 }
 
 uint8_t SCI_SyncReceiveByte() {
-	while (!isReceiveReady());
+	while (!isReceiveReady())
+		;
 	return readByte();
 }
 

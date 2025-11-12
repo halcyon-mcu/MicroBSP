@@ -23,7 +23,7 @@ jobs:
                       /usr/bin/arm-none-eabi-*
                       /usr/lib/gcc/arm-none-eabi
                       /usr/arm-none-eabi
-                  key: ${{ runner.os }}-arm-toolchain-${{ hashFiles('.github/workflows/*.yml') }}
+                  key: ${{ runner.os }}-arm-toolchain
 
             - name: Install ARM GCC toolchain
               run: |

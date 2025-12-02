@@ -8,8 +8,8 @@ Tiny implementation of a Board Support Package for the RM46x series of TI microc
 
 ## Usage
 
-Use `make example EXAMPLE=.` with one of the examples in the `examples/` folder to build an example project .bin file.
+Use `make example EXAMPLE=.` with one of the examples in the `examples/` folder (for example, `make example EXAMPLE=blink`). This will build to `./build/<EXAMPLE>.bin`.
 
-Then use a tool like [`uniflash`](https://www.ti.com/tool/UNIFLASH) to flash the `<EXAMPLE>.bin` file to the LAUNCHXL2-RM46 board.
+Then use a tool like [`uniflash`](https://www.ti.com/tool/UNIFLASH) to flash the `<EXAMPLE>.bin` file to the LAUNCHXL2-RM46 board. Alternatively this should work with [CCStudio](https://www.ti.com/tool/CCSTUDIO)
 
-Note you will need to enable `Run Target After Program Load/Flash Operation` if you want the program to immediately start running after flashing.
+**NOTE**: You will need to enable `Run Target After Program Load/Flash Operation` if you want the program to immediately start running after flashing.

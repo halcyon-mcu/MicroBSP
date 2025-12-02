@@ -1,3 +1,9 @@
+/**
+ * Blink example for MicroBSP.
+ * Expected behavior:
+ * - GIOB_1 pin is activated. (Right side of the board by the buttons)
+ */
+
 #include "gpio.h"
 #include "sci.h"
 #include "sys1.h"

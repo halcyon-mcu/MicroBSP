@@ -21,7 +21,6 @@
 #define GPIO_PULDISB_OFFSET 0x6C
 
 void GPIO_Init() {
-	// FIXME: This doesn't seem to affect anything.
 	// Set PS[16] to power on all quadrants of GPIO (enable clk)
 	PCR_ClearPowerDown(16, 0b1111);
 

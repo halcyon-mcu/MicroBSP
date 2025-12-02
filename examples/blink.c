@@ -5,6 +5,7 @@
  */
 
 #include "gpio.h"
+#include "pcr.h"
 #include "sci.h"
 #include "sys1.h"
 
@@ -17,12 +18,15 @@ int main() {
 	GPIO_SetOpenDrain(GPIOB_1, false);
 	GPIO_SetHigh(GPIOB_1, true);
 
-	// bool toggle = false;
-	// while (true) {
-	// 	uint8_t byte = SCI_SyncReceiveByte();
-	// 	GPIO_SetHigh(GPIOB_1, toggle);
-	// 	toggle = !toggle;
-	// }
+	GPIO_SetDirection(GPIOB_2, GPIO_DIR_OUTPUT);
+	GPIO_SetOpenDrain(GPIOB_2, false);
+
+	bool toggle = false;
+	while (true) {
+		uint8_t _ = SCI_SyncReceiveByte();
+		GPIO_SetHigh(GPIOB_2, toggle);
+		toggle = !toggle;
+	}
 
 	return 0;
 }

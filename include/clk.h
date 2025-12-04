@@ -9,6 +9,8 @@ extern "C" {
 typedef struct {
 	uint32_t oscinHz;
 	uint32_t pllMul;
+	uint32_t pllDiv;
+	uint32_t refClkDiv;
 	uint32_t hClkDiv;
 	uint32_t vClkDiv;
 } clk_config_t;

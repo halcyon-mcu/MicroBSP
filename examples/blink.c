@@ -4,6 +4,7 @@
  * - GIOB_1 pin is activated. (Right side of the board by the buttons)
  */
 
+#include "clk.h"
 #include "gpio.h"
 #include "pcr.h"
 #include "sci.h"
@@ -13,6 +14,7 @@ int main() {
 	SYS1_Init();
 	GPIO_Init();
 	SCI_Init();
+	CLK_Init();
 
 	GPIO_SetDirection(GPIOB_1, GPIO_DIR_OUTPUT);
 	GPIO_SetOpenDrain(GPIOB_1, false);
@@ -21,11 +23,20 @@ int main() {
 	GPIO_SetDirection(GPIOB_2, GPIO_DIR_OUTPUT);
 	GPIO_SetOpenDrain(GPIOB_2, false);
 
+	uint32_t counter = 0;
 	bool toggle = false;
 	while (true) {
-		uint8_t _ = SCI_SyncReceiveByte();
-		GPIO_SetHigh(GPIOB_2, toggle);
-		toggle = !toggle;
+		// uint8_t _ = SCI_SyncReceiveByte();
+
+		counter++;
+		if (counter % 1000000 == 0) {
+			GPIO_SetHigh(GPIOB_2, toggle);
+			toggle = !toggle;
+			counter = 0;
+		}
+
+		// GPIO_SetHigh(GPIOB_2, toggle);
+		// toggle = !toggle;
 	}
 
 	return 0;

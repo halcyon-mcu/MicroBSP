@@ -20,14 +20,26 @@
 #define SCIGCR1_RXENA (1 << 24)
 #define SCIGCR1_SWNRST (1 << 7)
 #define SCIGCR1_CLOCK (1 << 5)
-#define SCIGCR1_TIMING (1 << 1)
+#define SCIGCR1_ASYNC (1 << 1)
+
+static void setBaudRatePrescalers(uint32_t p, uint32_t m) {
+	set(uint32_t, SCI_BASE + SCI_BRS_OFFSET, (m & 0xF << 24) | (p & 0xFFFFFF));
+}
 
 void SCI_Init() {
 	// Set PS[6] to power on all quadrants of SCI (enable clk)
 	PCR_ClearPowerDown(6, 0b1111);
 
 	setbit(uint32_t, SCI_BASE + SCI_GCR0_OFFSET, 0, 1);
-	set(uint32_t, SCI_BASE + SCI_GCR1_OFFSET, SCIGCR1_TXENA | SCIGCR1_RXENA | SCIGCR1_SWNRST | SCIGCR1_CLOCK | SCIGCR1_TIMING);
+	set(uint32_t, SCI_BASE + SCI_GCR1_OFFSET, SCIGCR1_TXENA | SCIGCR1_RXENA | SCIGCR1_SWNRST | SCIGCR1_CLOCK | SCIGCR1_ASYNC);
+
+	// todo: allow users to configure this
+	// VCLK = 8MHz
+	// SCICLK = VCLK / (P + 1 + M/16)
+	// Target SCICLK = 115200
+	// M = 5, P = 3
+	// = ~ 115900 (small enough error for 115200 baud)
+	setBaudRatePrescalers(3, 5);
 }
 
 unsigned int SCI_GetFlags() {
@@ -72,8 +84,4 @@ uint8_t SCI_SyncReceiveByte() {
 	}
 
 	return readByte();
-}
-
-void SCI_SetBaudRate(uint32_t rate) {
-	set(uint32_t, SCI_BASE + SCI_BRS_OFFSET, rate);
 }

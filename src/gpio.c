@@ -20,6 +20,9 @@
 #define GPIO_PULDISA_OFFSET 0x4C
 #define GPIO_PULDISB_OFFSET 0x6C
 
+#define GPIO_DCLRA_OFFSET 0x44
+#define GPIO_DCLRB_OFFSET 0x64
+
 void GPIO_Init() {
 	// Set PS[16] to power on all quadrants of GPIO (enable clk)
 	PCR_ClearPowerDown(16, 0b1111);
@@ -39,6 +42,7 @@ void GPIO_Init() {
 #define PULL_OFFSET(pin) (IS_PIN_A(pin) ? GPIO_PULDISA_OFFSET : GPIO_PULDISB_OFFSET)
 #define DRAIN_OFFSET(pin) (IS_PIN_A(pin) ? GPIO_PDRA_OFFSET : GPIO_PDRB_OFFSET)
 #define DSET_OFFSET(pin) (IS_PIN_A(pin) ? GPIO_DSETA_OFFSET : GPIO_DSETB_OFFSET)
+#define DCLR_OFFSET(pin) (IS_PIN_A(pin) ? GPIO_DCLRA_OFFSET : GPIO_DCLRB_OFFSET)
 
 void GPIO_SetDirection(gpio_pin_t pin, gpio_dir_t dir) {
 	setbit(uint32_t, GPIO_BASE + DIR_OFFSET(pin), PIN_OFFSET(pin), dir);
@@ -53,5 +57,9 @@ void GPIO_SetPullDisabled(gpio_pin_t pin, bool isDisabled) {
 }
 
 void GPIO_SetHigh(gpio_pin_t pin, bool isHigh) {
-	setbit(uint32_t, GPIO_BASE + DSET_OFFSET(pin), PIN_OFFSET(pin), isHigh ? 1 : 0);
+	if (isHigh) {
+		set(uint32_t, GPIO_BASE + DSET_OFFSET(pin), 1 << PIN_OFFSET(pin));
+	} else {
+		set(uint32_t, GPIO_BASE + DCLR_OFFSET(pin), 1 << PIN_OFFSET(pin));
+	}
 }

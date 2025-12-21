@@ -30,7 +30,7 @@ void SCI_Init() {
 	// Set PS[6] to power on all quadrants of SCI (enable clk)
 	PCR_ClearPowerDown(6, 0b1111);
 
-	setbit(uint32_t, SCI_BASE + SCI_GCR0_OFFSET, 0, 1);
+	set(uint32_t, SCI_BASE + SCI_GCR0_OFFSET, 1);
 	set(uint32_t, SCI_BASE + SCI_GCR1_OFFSET, SCIGCR1_TXENA | SCIGCR1_RXENA | SCIGCR1_SWNRST | SCIGCR1_CLOCK | SCIGCR1_ASYNC);
 
 	// todo: allow users to configure this

@@ -1,16 +1,18 @@
 /**
- * Blink example for MicroBSP.
- * Expected behavior:
- * - GIOB_1 pin is activated. (Right side of the board by the buttons)
- * - GIOB_2 pin blinks at an arbitrary rate spinlocking (~1s)
+ * SCI example for MicroBSP
  */
 
+#include "sci.h"
+#include "clk.h"
 #include "gpio.h"
+#include "pcr.h"
 #include "sys1.h"
 
 int main() {
 	SYS1_Init();
 	GPIO_Init();
+	SCI_Init();
+	CLK_Init();
 
 	GPIO_SetDirection(GPIOB_1, GPIO_DIR_OUTPUT);
 	GPIO_SetOpenDrain(GPIOB_1, false);
@@ -20,14 +22,13 @@ int main() {
 	GPIO_SetOpenDrain(GPIOB_2, false);
 
 	uint32_t counter = 0;
-	bool toggle = false;
 	while (true) {
+		SCI_SyncTransmitByte(0xDE);
+		SCI_SyncTransmitByte(0xAD);
+		SCI_SyncTransmitByte(0xBE);
+		SCI_SyncTransmitByte(0xEF);
+		// uint8_t _ = SCI_SyncReceiveByte();
 		counter++;
-		if (counter % 1000000 == 0) {
-			GPIO_SetHigh(GPIOB_2, toggle);
-			toggle = !toggle;
-			counter = 0;
-		}
 	}
 
 	return 0;

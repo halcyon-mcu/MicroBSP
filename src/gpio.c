@@ -51,26 +51,34 @@ void GPIO_Init() {
 #define DSET_OFFSET(pin) (IS_PIN_A(pin) ? GPIO_DSETA_OFFSET : GPIO_DSETB_OFFSET)
 #define DCLR_OFFSET(pin) (IS_PIN_A(pin) ? GPIO_DCLRA_OFFSET : GPIO_DCLRB_OFFSET)
 
-static uint32_t currentDirectionState = 0;
+static uint32_t currentDirectionStateA = 0;
+static uint32_t currentDirectionStateB = 0;
+
 void GPIO_SetDirection(gpio_pin_t pin, gpio_dir_t dir) {
+	uint32_t* state = IS_PIN_A(pin) ? &currentDirectionStateA : &currentDirectionStateB;
+
 	if (dir == GPIO_DIR_OUTPUT) {
-		currentDirectionState |= (1 << PIN_OFFSET(pin));
+		*state |= (1 << PIN_OFFSET(pin));
 	} else {
-		currentDirectionState &= ~(1 << PIN_OFFSET(pin));
+		*state &= ~(1 << PIN_OFFSET(pin));
 	}
 
-	set(uint32_t, GPIO_BASE + DIR_OFFSET(pin), currentDirectionState);
+	set(uint32_t, GPIO_BASE + DIR_OFFSET(pin), *state);
 }
 
-static uint32_t currentOpenDrainState = 0;
+static uint32_t currentOpenDrainStateA = 0;
+static uint32_t currentOpenDrainStateB = 0;
+
 void GPIO_SetOpenDrain(gpio_pin_t pin, bool isOpen) {
+	uint32_t* state = IS_PIN_A(pin) ? &currentOpenDrainStateA : &currentOpenDrainStateB;
+
 	if (isOpen) {
-		currentOpenDrainState |= (1 << PIN_OFFSET(pin));
+		*state |= (1 << PIN_OFFSET(pin));
 	} else {
-		currentOpenDrainState &= ~(1 << PIN_OFFSET(pin));
+		*state &= ~(1 << PIN_OFFSET(pin));
 	}
 
-	set(uint32_t, GPIO_BASE + DRAIN_OFFSET(pin), currentOpenDrainState);
+	set(uint32_t, GPIO_BASE + DRAIN_OFFSET(pin), *state);
 }
 
 void GPIO_SetPullDisabled(gpio_pin_t pin, bool isDisabled) {

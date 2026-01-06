@@ -26,17 +26,12 @@ int main() {
 	uint32_t counter = 0;
 	bool toggle = false;
 	while (true) {
-		// uint8_t _ = SCI_SyncReceiveByte();
-
 		counter++;
 		if (counter % 1000000 == 0) {
 			GPIO_SetHigh(GPIOB_2, toggle);
 			toggle = !toggle;
 			counter = 0;
 		}
-
-		// GPIO_SetHigh(GPIOB_2, toggle);
-		// toggle = !toggle;
 	}
 
 	return 0;

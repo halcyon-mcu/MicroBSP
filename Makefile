@@ -16,10 +16,10 @@ AR = $(PREFIX)ar
 MCU = cortex-r4
 FPU = -mfloat-abi=hard -mfpu=vfpv3-d16
 
-CFLAGS = -mcpu=$(MCU) $(FPU) -mthumb \
+CFLAGS = -mcpu=$(MCU) $(FPU) \
          -I$(INC_DIR) \
          -Wall -Wextra \
-         -g -O3 \
+         -g -O0 \
          -ffunction-sections -fdata-sections \
          -ffreestanding
 

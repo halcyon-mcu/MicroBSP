@@ -13,8 +13,8 @@
 int main() {
 	SYS1_Init();
 	GPIO_Init();
-	SCI_Init();
-	CLK_Init();
+	// SCI_Init();
+	// CLK_Init();
 
 	GPIO_SetDirection(GPIOB_1, GPIO_DIR_OUTPUT);
 	GPIO_SetOpenDrain(GPIOB_1, false);

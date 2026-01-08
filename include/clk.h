@@ -22,6 +22,10 @@ uint32_t CLK_GetGClkHz();
 uint32_t CLK_GetHClkHz();
 uint32_t CLK_GetVClkHz();
 
+uint32_t CLK_GetGClk();
+uint32_t CLK_GetHClk();
+uint32_t CLK_GetVClk();
+
 #ifdef __cplusplus
 }
 #endif

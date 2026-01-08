@@ -6,6 +6,9 @@ extern "C" {
 
 void VIM_Init();
 
+/// Configure RTI Compare 0 interrupt in VIM
+void VIM_ConfigureRTIInterrupt();
+
 /// Defined by assembly
 void VIM_Disable_IRQ();
 

@@ -1,35 +1,47 @@
 #include "clk.h"
 
+#include "util.h"
 #include <stdbool.h>
 
-// UB to access this without CLK_Init first.
-// static clk_config_t globalConfig;
-// static bool isInitialized = false;
+// Clock sources information can be found at page 120 of TRM
+#define CLK_CS_OSCIN 0
+#define CLK_CS_PLL1 1
+#define CLK_CS_EXTCLKIN 3
+#define CLK_CS_LOWFREQ 4
+#define CLK_CS_HIGHFREQ 5
+#define CLK_CS_PLL2 6
+#define CLK_CS_EXTCLKIN2 7
+
+#define CLK_BASE 0xFFFFE100
+#define CLK_CSDIS_OFFSET 0x30
+#define CLK_PLLCTL1_OFFSET 0x70
+#define CLK_PLLCTL2_OFFSET 0x74
+#define CLK_GHVSRC_OFFSET 0x48 // GCLK/HCLK/VCLK/VCLK2
+#define CLK_RCLKSRC_OFFSET 0x50 // RTI CLK
+
+#define CLK_GHVSRC_SRC(s) s
+#define CLK_RCLKSRC_SRC(s) s
 
 // Default clock domains located on TRM page 121
 // GCLK = OSCIN
 // HCLK = OSCIN (in phase with GCLK)
 // VCLK = HCLK / N (where N is 2 by default, see page 123 of TRM)
 
-// Clock Sources Table can be found on page 137 of TRM
-// 0 - Oscillator
-// 1 - PLL1
-// 2 - Not implemented
-// 3 - EXTCLKIN
-// 4 - Low Freq LPO
-// 5 - High Freq LPO
-// 6 - PLL2
-// 7 - EXTCLKIN2
-
 // Info found on page 1520 of TRM.
 // SCICLK = (VCLK) / (P + 1 + (M/16))
 // SCICLK = 8MHz / (P + 1 + (M/16))
 
 // Discovered according to schematic
+// 16MHz
 #define LAUNCHXL_OSCIN_HZ 16000000U
 
 void CLK_Init() {
-	// TODO: Allow configuration with GHVSRC
+	// Ensure default clock source for vclk/hclk/gclk is just OSCIN
+	// No PLL
+	set(uint32_t, CLK_BASE + CLK_GHVSRC_OFFSET, CLK_GHVSRC_SRC(CLK_CS_OSCIN));
+
+	// Ensure RTI is set to VCLK
+	set(uint32_t, CLK_BASE + CLK_RCLKSRC_OFFSET, CLK_RCLKSRC_SRC(9));
 }
 
 uint32_t CLK_GetGClk() {

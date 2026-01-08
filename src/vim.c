@@ -1,0 +1,33 @@
+#include "vim.h"
+
+#include "util.h"
+
+#define VIM_BASE 0xFFFFFE00
+
+#define VIM_IRQINDEX_OFFSET 0x0
+#define VIM_FIQINDEX_OFFSET 0x4
+
+#define VIM_REQENASET0 0x30
+#define VIM_REQENASET1 0x34
+#define VIM_REQENASET2 0x38
+#define VIM_REQENASET3 0x3C
+
+#define VIM_REQENACLR0 0x40
+#define VIM_REQENACLR1 0x44
+#define VIM_REQENACLR2 0x48
+#define VIM_REQENACLR3 0x4C
+
+// This keeps going to CHANCTRL31
+#define VIM_CHANCTRL0 0x80
+#define VIM_CHANCTRL1 0x84
+#define VIM_CHANCTRL2 0x88
+#define VIM_CHANCTRL3 0x8C
+#define VIM_CHANCTRL4 0x90
+#define VIM_CHANCTRL5 0x94
+#define VIM_CHANCTRL6 0x98
+#define VIM_CHANCTRL7 0x9C
+#define VIM_CHANCTRL8 0xA0
+
+void VIM_Init() {
+	VIM_Enable_IRQ();
+}

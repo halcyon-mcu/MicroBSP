@@ -57,3 +57,13 @@ IRQ_Handler:
 .type FIQ_Handler, %function
 FIQ_Handler:
 	b . /* Infinite loop to prevent falling through */
+
+.global VIM_Enable_IRQ
+.type VIM_Enable_IRQ, %function
+VIM_Enable_IRQ:
+    CPSIE i
+
+.global VIM_Disable_IRQ
+.type VIM_Disable_IRQ, %function
+VIM_Disable_IRQ:
+    CPSID i

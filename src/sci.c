@@ -30,6 +30,7 @@
 #define SCIGCR1_SWNRST (1 << 7)
 #define SCIGCR1_CLOCK (1 << 5)
 #define SCIGCR1_ASYNC (1 << 1)
+#define SCIGCR1_STOP_BITS_2 (1 << 4)
 
 static void setBaudRatePrescalers(uint32_t p, uint32_t m) {
 	set(uint32_t, SCI_BASE + SCI_BRS_OFFSET, (m & 0xF << 24) | (p & 0xFFFFFF));
@@ -44,15 +45,16 @@ void SCI_Init() {
 	// Reset SCI before configuration
 	set(uint32_t, SCI_BASE + SCI_GCR1_OFFSET, 0);
 
-	set(uint32_t, SCI_BASE + SCI_GCR1_OFFSET, SCIGCR1_TXENA | SCIGCR1_RXENA | SCIGCR1_CLOCK | SCIGCR1_ASYNC | SCIGCR1_CONT);
+	set(uint32_t, SCI_BASE + SCI_GCR1_OFFSET, SCIGCR1_TXENA | SCIGCR1_RXENA | SCIGCR1_CLOCK | SCIGCR1_ASYNC | SCIGCR1_CONT | SCIGCR1_STOP_BITS_2);
 
 	// todo: allow users to configure this
 	// VCLK = 8MHz
 	// SCICLK = VCLK / (P + 1 + M/16)
 	// Target SCICLK = 115200
-	// M = 5, P = 3
+	// P = 3, M = 5
 	// = ~ 115900 (small enough error for 115200 baud)
-	setBaudRatePrescalers(3, 5);
+	// With P = 0, then baud = VCLK/32, baud = 250000
+	setBaudRatePrescalers(0, 0);
 
 	set(uint32_t, SCI_BASE + SCI_GCR1_OFFSET, SCIGCR1_SWNRST);
 }

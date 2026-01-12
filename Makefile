@@ -19,7 +19,7 @@ FPU = -mfloat-abi=hard -mfpu=vfpv3-d16
 CFLAGS = -mcpu=$(MCU) $(FPU) \
          -I$(INC_DIR) \
          -Wall -Wextra \
-         -g -O0 \
+         -g -O3 \
          -ffunction-sections -fdata-sections \
          -ffreestanding
 

@@ -44,7 +44,7 @@ typedef enum {
  * GPIO Initialization function. This must be called a single time upon reset.
  *
  * # SAFETY
- * This assumes that SYS1_Init has been called beforehand.
+ * This assumes that SYS_Init has been called beforehand.
  */
 void GPIO_Init();
 

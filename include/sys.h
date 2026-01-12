@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-void SYS1_Init();
+void SYS_Init();
 
 #ifdef __cplusplus
 }

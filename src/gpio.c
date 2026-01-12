@@ -1,6 +1,5 @@
 #include "gpio.h"
 
-#include "pcr.h"
 #include "util.h"
 
 // Refer to 1303 of TRM for initialization steps
@@ -51,10 +50,14 @@ STATIC_ASSERT(offsetof(gpio_register_t, PULSELA) == 0x50, invalid_offset);
 
 void GPIO_Init() {
 	// Set PS[16] to power on all quadrants of GPIO (enable clk)
-	PCR_ClearPowerDown(16, 0b1111);
+	// PCR_ClearPowerDown(16, 0b1111);
 
 	// Start GIO
 	gpioREG->GCR0 = 1;
+
+	// For interrupts later
+	gpioREG->ENACLR = 0xFFU;
+	gpioREG->LVLCLR = 0xFFU;
 }
 
 // How many pins are in each set 'A' and 'B'
@@ -63,14 +66,10 @@ void GPIO_Init() {
 // Returns whether the pin falls into the 'A' set of pins.
 #define IS_PIN_A(pin) (pin < PINS_PER_SET)
 #define PIN_OFFSET(pin) (IS_PIN_A(pin) ? pin : pin - PINS_PER_SET)
-
 #define DIR_OFFSET(pin) (IS_PIN_A(pin) ? &gpioREG->DIRA : &gpioREG->DIRB)
-
 #define PULLDIS_OFFSET(pin) (IS_PIN_A(pin) ? &gpioREG->PULDISA : &gpioREG->PULDISB)
 #define PULLSEL_OFFSET(pin) (IS_PIN_A(pin) ? &gpioREG->PULSELA : &gpioREG->PULSELB)
-
 #define DRAIN_OFFSET(pin) (IS_PIN_A(pin) ? &gpioREG->PDRA : &gpioREG->PDRB)
-
 #define DSET_OFFSET(pin) (IS_PIN_A(pin) ? &gpioREG->DSETA : &gpioREG->DSETB)
 #define DCLR_OFFSET(pin) (IS_PIN_A(pin) ? &gpioREG->DCLRA : &gpioREG->DCLRB)
 

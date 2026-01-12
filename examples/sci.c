@@ -25,7 +25,7 @@ int main() {
 	SCI_SyncTransmitByte(0xDE);
 
 	uint32_t got = SCI_SyncReceiveByte();
-	GPIO_SetHigh(GPIOB_1, got == 0xDE);
+	GPIO_SetHigh(GPIOB_2, got == 0xDE);
 
 	return 0;
 }

@@ -4,49 +4,8 @@
 #include "pcr.h"
 #include "util.h"
 
+#include <math.h>
 #include <stdbool.h>
-
-typedef struct {
-	volatile uint32_t GCR0;
-	volatile uint32_t GCR1;
-	volatile uint32_t GCR2;
-	volatile uint32_t SETINT;
-	volatile uint32_t CLEARINT;
-	volatile uint32_t SETINTLVL;
-	volatile uint32_t CLEARINTLVL;
-	volatile uint32_t FLR;
-	volatile uint32_t INTVECT0;
-	volatile uint32_t INTVECT1;
-	volatile uint32_t FORMAT;
-	volatile uint32_t BRS;
-	volatile uint32_t ED;
-	volatile uint32_t RD;
-	volatile uint32_t TD;
-	volatile uint32_t PIO0;
-	volatile uint32_t PIO1;
-	volatile uint32_t PIO2;
-	volatile uint32_t PIO3;
-	volatile uint32_t PIO4;
-	volatile uint32_t PIO5;
-	volatile uint32_t PIO6;
-	volatile uint32_t PIO7;
-	volatile uint32_t PIO8;
-	volatile uint32_t LINCOMPARE;
-	volatile uint32_t LINRD0;
-	volatile uint32_t LINRD1;
-	volatile uint32_t LINMASK;
-	volatile uint32_t LINID;
-	volatile uint32_t LINTD0;
-	volatile uint32_t LINTD1;
-	volatile uint32_t MBRS;
-	volatile uint32_t _RESERVED[4];
-	volatile uint32_t IODFTCTRL;
-} sci_register_t;
-
-STATIC_ASSERT(offsetof(sci_register_t, GCR0) == 0x00, sci_register_t_size_mismatch);
-STATIC_ASSERT(offsetof(sci_register_t, PIO7) == 0x58, sci_register_t_size_mismatch);
-STATIC_ASSERT(offsetof(sci_register_t, FLR) == 0x1C, sci_register_t_size_mismatch);
-STATIC_ASSERT(offsetof(sci_register_t, IODFTCTRL) == 0x90, sci_register_t_size_mismatch);
 
 sci_register_t* const sciREG = (sci_register_t*)(uintptr_t)(0xFFF7E500UL);
 
@@ -71,17 +30,27 @@ static void setBaudRatePrescalers(uint32_t p, uint32_t m) {
 	sciREG->BRS = (m & 0xF << 24) | (p & 0xFFFFFF);
 }
 
+void SCI_SetBaudRate(uint32_t rate) {
+	const float vclk = 8.0e6f; // 8 MHz
+	const uint32_t f = (sciREG->GCR1 & SCIGCR1_ASYNC) ? 16U : 1U;
+
+	const float divisor = (vclk / (f * rate)) - 1.0f;
+	const uint32_t brs = (uint32_t)(floorf(divisor + 0.5f)) & 0x00FFFFFFU;
+
+	sciREG->BRS = brs;
+}
+
 void SCI_Init() {
 	// Set PS[6] to power on all quadrants of SCI (enable clk)
-	PCR_ClearPowerDown(6, 0b1111);
+	// PCR_ClearPowerDown(6, 0b1111);
 
 	// Bring out of reset
 	sciREG->GCR0 = 0;
 	sciREG->GCR0 = 1;
 
 	// Disable all interrupts
-	sciREG->CLEARINT = 0;
-	sciREG->CLEARINTLVL = 0;
+	sciREG->CLEARINT = 0xFFFFFFFFU;
+	sciREG->CLEARINTLVL = 0xFFFFFFFFU;
 
 	/* clang-format off */
 	sciREG->GCR1 =
@@ -89,8 +58,7 @@ void SCI_Init() {
 		SCIGCR1_RXENA |
 		SCIGCR1_CLOCK |
 		SCIGCR1_STOPBITS(1) |
-		SCIGCR1_PARITY_ODD |
-		SCIGCR1_PARITY_ENABLED |
+		SCIGCR1_PARITY_DISABLED |
 		SCIGCR1_ASYNC;
 	/* clang-format on */
 
@@ -141,12 +109,12 @@ uint32_t SCI_GetFlags() {
 #define SCI_FLAGS_WAKEUP_MASK (1U << 1U)
 #define SCI_FLAGS_BRKDT_MASK (1U << 0U)
 
-static bool isReceiveReady() {
-	return (SCI_GetFlags() & SCI_FLAGS_RXRDY_MASK) != 0;
+static inline bool isReceiveReady() {
+	return (sciREG->FLR & SCI_FLAGS_RXRDY_MASK) != 0;
 }
 
-static bool isTransmitReady() {
-	return (SCI_GetFlags() & SCI_FLAGS_TXRDY_MASK) != 0;
+static inline bool isTransmitReady() {
+	return (sciREG->FLR & SCI_FLAGS_TXRDY_MASK) != 0;
 }
 
 static void writeByte(uint8_t data) {

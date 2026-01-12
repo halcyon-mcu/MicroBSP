@@ -98,6 +98,6 @@ static void initPeripherals() {
 }
 
 void SYS_Init() {
-	initPLL();
+	// initPLL();
 	initPeripherals();
 }

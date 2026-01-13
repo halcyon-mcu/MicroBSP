@@ -9,25 +9,19 @@ extern "C" {
 
 #include "util.h"
 
-/**
- * SCI Initialization function. This must be called a single time upon reset.
- * Initializes SCI in SCI mode.
- *
- * # SAFETY
- * This assumes that SYS_Init has been called beforehand.
- */
-void SCI_Init();
-
-uint32_t SCI_GetFlags();
-
-void SCI_SyncTransmitByte(uint8_t data);
-uint8_t SCI_SyncReceiveByte();
-
 typedef enum { /* clang-format off */
 	SCI_LOOPBACK_DISABLE = 0,
 	SCI_LOOPBACK_ANALOG = 1,
 	SCI_LOOPBACK_DIGITAL = 2
 } sci_loopback_t; /* clang-format on */
+
+// Get the raw flags from SCI. Mostly meant for internal use.
+#define SCI_FLAGS_RXRDY_MASK (1U << 9U)
+#define SCI_FLAGS_TXRDY_MASK (1U << 8U)
+#define SCI_FLAGS_BUSY_MASK (1U << 3U)
+#define SCI_FLAGS_IDLE_MASK (1U << 2U)
+#define SCI_FLAGS_WAKEUP_MASK (1U << 1U)
+#define SCI_FLAGS_BRKDT_MASK (1U << 0U)
 
 typedef struct {
 	volatile uint32_t GCR0;
@@ -54,15 +48,7 @@ typedef struct {
 	volatile uint32_t PIO6;
 	volatile uint32_t PIO7;
 	volatile uint32_t PIO8;
-	volatile uint32_t LINCOMPARE;
-	volatile uint32_t LINRD0;
-	volatile uint32_t LINRD1;
-	volatile uint32_t LINMASK;
-	volatile uint32_t LINID;
-	volatile uint32_t LINTD0;
-	volatile uint32_t LINTD1;
-	volatile uint32_t MBRS;
-	volatile uint32_t _RESERVED[4];
+	volatile uint32_t _RESERVED[12U];
 	volatile uint32_t IODFTCTRL;
 } sci_register_t;
 
@@ -72,10 +58,21 @@ STATIC_ASSERT(offsetof(sci_register_t, FLR) == 0x1C, sci_register_t_size_mismatc
 STATIC_ASSERT(offsetof(sci_register_t, IODFTCTRL) == 0x90, sci_register_t_size_mismatch);
 
 extern sci_register_t* const sciREG;
+extern sci_register_t* const scilinREG;
 
-void SCI_SetLoopback(sci_loopback_t mode);
-
-void SCI_SetBaudRate(uint32_t rate);
+/**
+ * SCI Initialization function. This must be called a single time upon reset.
+ * Initializes SCI in SCI mode.
+ *
+ * # SAFETY
+ * This assumes that SYS_Init has been called beforehand.
+ */
+void SCI_Init(sci_register_t* sci);
+uint32_t SCI_GetFlags(sci_register_t* sci);
+void SCI_SyncTransmitByte(sci_register_t* sci, uint8_t data);
+uint8_t SCI_SyncReceiveByte(sci_register_t* sci);
+void SCI_SetLoopback(sci_register_t* sci, sci_loopback_t mode);
+void SCI_SetBaudRate(sci_register_t* sci, uint32_t rate);
 
 #ifdef __cplusplus
 }

@@ -26,10 +26,6 @@ sci_register_t* const sciREG = (sci_register_t*)(uintptr_t)(0xFFF7E500UL);
 #define SCIGCR1_PARITY_ENABLED (1U << 2U)
 #define SCIGCR1_PARITY_DISABLED (0U << 2U)
 
-static void setBaudRatePrescalers(uint32_t p, uint32_t m) {
-	sciREG->BRS = (m & 0xF << 24) | (p & 0xFFFFFF);
-}
-
 void SCI_SetBaudRate(uint32_t rate) {
 	const float vclk = 8.0e6f; // 8 MHz
 	const uint32_t f = (sciREG->GCR1 & SCIGCR1_ASYNC) ? 16U : 1U;

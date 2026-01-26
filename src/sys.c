@@ -1,5 +1,6 @@
 #include "sys.h"
 
+#include "flash.h"
 #include "pcr.h"
 #include <stdint.h>
 
@@ -47,9 +48,6 @@ static void initPLL() {
 	while ((sys1REG->CSVSTAT & (1 << CLKSRC_PLL1_OFFSET)) == 0) {
 		// Wait for PLL1 to lock
 	}
-
-	// Set GCLK/HCLK to use PLL1
-	sys1REG->GHVSRC = ((sys1REG->GHVSRC & ~(0b1111)) | CLKSRC_PLL1_OFFSET);
 }
 
 #define CLKCNTL_PENA (1 << 8)
@@ -64,7 +62,14 @@ static void initPeripherals() {
 	sys1REG->CLKCNTL = CLKCNTL_PENA | CLKCNTL_VCLKR(2); // VCLK = HCLK / 2
 }
 
+static void initClockMapping() {
+	// Set GCLK/HCLK to use PLL1
+	sys1REG->GHVSRC = ((sys1REG->GHVSRC & ~(0b1111)) | CLKSRC_PLL1_OFFSET);
+}
+
 void SYS_Init() {
 	initPLL();
 	initPeripherals();
+	FLASH_Init();
+	initClockMapping();
 }

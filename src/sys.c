@@ -1,5 +1,6 @@
 #include "sys.h"
 
+#include "core.h"
 #include "flash.h"
 #include "pcr.h"
 #include <stdint.h>
@@ -111,10 +112,13 @@ static void initMemory() {
 				   MEMORY_UNIT_NTHET1 | MEMORY_UNIT_HETTU1);
 }
 
+#define RAMGCR_DATAWAIT(n) (((n) & 0b1) << 0)
+#define RAMGCR_ADDRWAIT(n) (((n) & 0b1) << 2)
+#define RAMGCR_DFTEN(n) (((n) & 0b1111) << 16)
+
 static void initRAM() {
 	// RAM doesn't need any wait states unlike flash.
-
-	// TODO: Handle any other necessary initialization for ram
+	sys1REG->RAMGCR = RAMGCR_DATAWAIT(0) | RAMGCR_ADDRWAIT(0) | RAMGCR_DFTEN(0x5);
 }
 
 static void initVIM() {
@@ -127,6 +131,7 @@ void SYS_Init() {
 	FLASH_Init();
 	initClockMapping();
 	initMemory();
+	CORE_EnableRamECC();
 	initRAM();
-	initVIM();
+	// initVIM();
 }

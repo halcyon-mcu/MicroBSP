@@ -1,8 +1,6 @@
 // Refer to page 1623 of TRM for SCI Control Registers
 
 #include "sci.h"
-#include "pcr.h"
-#include "util.h"
 
 #include <math.h>
 #include <stdbool.h>

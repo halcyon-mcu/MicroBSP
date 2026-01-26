@@ -9,7 +9,7 @@ extern "C" {
 #include <stdint.h>
 
 typedef struct {
-	volatile uint32_t FRDCNTRL;		  // 0x0
+	volatile uint32_t FRDCNTL;		  // 0x0
 	volatile uint32_t reserved1;	  // 0x4
 	volatile uint32_t FEDACTRL1;	  // 0x8
 	volatile uint32_t FEDACTRL2;	  // 0xC
@@ -61,7 +61,7 @@ typedef struct {
 	volatile uint32_t FCFG_BANK;	  // 0x400
 } flash_register_t;
 
-STATIC_ASSERT(offsetof(flash_register_t, FRDCNTRL) == 0x0, flash_register_t_size_mismatch);
+STATIC_ASSERT(offsetof(flash_register_t, FRDCNTL) == 0x0, flash_register_t_size_mismatch);
 
 extern flash_register_t* const flashREG;
 

@@ -20,10 +20,43 @@ Abort_Addr:      .word Abort_Handler
 IRQ_Addr:        .word IRQ_Handler
 FIQ_Addr:        .word FIQ_Handler
 
+.equ SYS1_BASE,     0xFFFFFF00
+.equ MINITGCR,      0x5C
+.equ MSINENA,       0x60
+.equ MSTCGSTAT,     0x68
+
+.equ MINITGCR_ENABLE,  0xA
+.equ MINITGCR_DISABLE, 0x5
+.equ MEMORY_UNIT_CPU,  (1 << 0)
+.equ MSTCGSTAT_DONE,   (1 << 8)
+
 .global Reset_Handler
 .type Reset_Handler, %function
 Reset_Handler:
-    ldr sp, =end_of_stack /* Set up stack pointer */
+    /* Initialize CPU RAM before setting up stack (for ECC) */
+    ldr r0, =SYS1_BASE
+
+    mov r1, #MINITGCR_ENABLE
+    str r1, [r0, #MINITGCR]
+
+    mov r1, #MEMORY_UNIT_CPU
+    str r1, [r0, #MSINENA]
+
+cpu_ram_init_wait:
+    ldr r1, [r0, #MSTCGSTAT]
+    tst r1, #MSTCGSTAT_DONE
+    beq cpu_ram_init_wait
+
+    mov r1, #MINITGCR_DISABLE
+    str r1, [r0, #MINITGCR]
+
+    /* Enable ECC now that RAM is initialized */
+    mrc p15, #0x00, r0, c1, c0, #0x01
+    orr r0, r0, #0x0C000000
+    mcr p15, #0x00, r0, c1, c0, #0x01
+
+    /* Now safe to set up stack pointer */
+    ldr sp, =end_of_stack
 
     bl Reset_Handler_C
     b . /* Infinite loop to prevent falling through */

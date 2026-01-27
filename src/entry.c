@@ -1,6 +1,7 @@
 // Higher level Reset Handler
 // This exists to avoid any more assembly code than needed.
 
+#include "sys.h"
 #include "util.h"
 #include <stddef.h>
 #include <stdint.h>
@@ -26,6 +27,7 @@ void Reset_Handler_C() {
 	size_t bss_size = (size_t)(&end_of_bss - &start_of_bss);
 	memset(&start_of_bss, 0, bss_size);
 
+	SYS_Init();
 	main();
 
 	while (1) {

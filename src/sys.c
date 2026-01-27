@@ -106,8 +106,7 @@ static void initMemoryUnit(uint32_t ram) {
 #define MEMORY_UNIT_HETTU2 (1 << 16)
 
 static void initMemory() {
-	initMemoryUnit(MEMORY_UNIT_CPU);
-
+	// Note: CPU RAM (MEMORY_UNIT_CPU) is initialized in start.s before stack setup
 	initMemoryUnit(MEMORY_UNIT_DMA | MEMORY_UNIT_VIM | MEMORY_UNIT_DCAN1 | MEMORY_UNIT_DCAN2 | MEMORY_UNIT_MIBADC1 |
 				   MEMORY_UNIT_NTHET1 | MEMORY_UNIT_HETTU1);
 }
@@ -131,7 +130,6 @@ void SYS_Init() {
 	FLASH_Init();
 	initClockMapping();
 	initMemory();
-	CORE_EnableRamECC();
 	initRAM();
 	// initVIM();
 }

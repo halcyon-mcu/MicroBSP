@@ -6,10 +6,8 @@
 #include "clk.h"
 #include "gpio.h"
 #include "pcr.h"
-#include "sys.h"
 
 int main() {
-	SYS_Init();
 	GPIO_Init();
 	SCI_Init();
 	// CLK_Init();

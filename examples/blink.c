@@ -6,10 +6,8 @@
  */
 
 #include "gpio.h"
-#include "sys.h"
 
 int main() {
-	SYS_Init();
 	GPIO_Init();
 
 	GPIO_SetDirection(GPIOB_1, GPIO_DIR_OUTPUT);

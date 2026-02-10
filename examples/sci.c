@@ -10,7 +10,6 @@
 int main() {
 	GPIO_Init();
 	SCI_Init();
-	// CLK_Init();
 
 	GPIO_SetDirection(GPIOB_1, GPIO_DIR_OUTPUT);
 	GPIO_SetOpenDrain(GPIOB_1, false);
@@ -19,11 +18,19 @@ int main() {
 	GPIO_SetDirection(GPIOB_2, GPIO_DIR_OUTPUT);
 	GPIO_SetOpenDrain(GPIOB_2, false);
 
-	SCI_SetLoopback(SCI_LOOPBACK_DIGITAL);
-	SCI_SyncTransmitByte(0xDE);
+	volatile uint32_t i;
+	bool high = false;
+	while (true) {
+		GPIO_SetHigh(GPIOB_2, high);
+		high = !high;
 
-	uint32_t got = SCI_SyncReceiveByte();
-	GPIO_SetHigh(GPIOB_2, got == 0xDE);
+		SCI_SyncTransmitByte('A');
+		SCI_SyncTransmitByte('B');
+
+		for (i = 0; i < 1000000; i++) {
+			// yeah
+		}
+	}
 
 	return 0;
 }

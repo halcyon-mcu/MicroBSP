@@ -1,11 +1,10 @@
 // Refer to page 1623 of TRM for SCI Control Registers
 
 #include "sci.h"
+#include "iomm.h"
 
 #include <math.h>
 #include <stdbool.h>
-
-sci_register_t* const sciREG = (sci_register_t*)(uintptr_t)(0xFFF7E500UL);
 
 // I'd like to use bitfield struct here but isn't safe across different compilers
 #define SCIGCR1_TXENA (1U << 25U)
@@ -35,6 +34,11 @@ void SCI_SetBaudRate(uint32_t rate) {
 }
 
 void SCI_Init() {
+	IOMM_UnlockPinMMR();
+	iommREG->PINMMR[7] = (1 << 17); // Set N2HET1[06] to SCIRX
+	iommREG->PINMMR[8] = (1 << 1); // Set N2HET1[13] to SCITX
+	IOMM_LockPinMMR();
+
 	// Set PS[6] to power on all quadrants of SCI (enable clk)
 	// PCR_ClearPowerDown(6, 0b1111);
 
@@ -103,28 +107,28 @@ uint32_t SCI_GetFlags() {
 #define SCI_FLAGS_WAKEUP_MASK (1U << 1U)
 #define SCI_FLAGS_BRKDT_MASK (1U << 0U)
 
-static inline bool isReceiveReady() {
-	return (sciREG->FLR & SCI_FLAGS_RXRDY_MASK) != 0;
+static inline bool isReceiveReady(sci_register_t* reg) {
+	return (reg->FLR & SCI_FLAGS_RXRDY_MASK) != 0;
 }
 
-static inline bool isTransmitReady() {
-	return (sciREG->FLR & SCI_FLAGS_TXRDY_MASK) != 0;
+static inline bool isTransmitReady(sci_register_t* reg) {
+	return (reg->FLR & SCI_FLAGS_TXRDY_MASK) != 0;
 }
 
-static void writeByte(uint8_t data) {
-	sciREG->TD = data;
+static void writeByte(sci_register_t* reg, uint8_t data) {
+	reg->TD = data;
 }
 
-static uint8_t readByte() {
-	return (uint8_t)(sciREG->RD & 0xFFU);
+static uint8_t readByte(sci_register_t* reg) {
+	return (uint8_t)(reg->RD & 0xFFU);
 }
 
-void SCI_SyncTransmitByte(uint8_t data) {
-	while (!isTransmitReady()) {
+void SCI_SyncTransmitByte(sci_register_t* reg, uint8_t data) {
+	while (!isTransmitReady(reg)) {
 		// Wait
 	}
 
-	writeByte(data);
+	writeByte(reg, data);
 }
 
 /// - Analog: Routes SCITX through SCIRX and uses that

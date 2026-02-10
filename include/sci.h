@@ -9,20 +9,6 @@ extern "C" {
 
 #include "util.h"
 
-/**
- * SCI Initialization function. This must be called a single time upon reset.
- * Initializes SCI in SCI mode.
- *
- * # SAFETY
- * This assumes that SYS_Init has been called beforehand.
- */
-void SCI_Init();
-
-uint32_t SCI_GetFlags();
-
-void SCI_SyncTransmitByte(uint8_t data);
-uint8_t SCI_SyncReceiveByte();
-
 typedef enum { /* clang-format off */
 	SCI_LOOPBACK_DISABLE = 0,
 	SCI_LOOPBACK_ANALOG = 1,
@@ -71,11 +57,15 @@ STATIC_ASSERT(offsetof(sci_register_t, PIO7) == 0x58, sci_register_t_size_mismat
 STATIC_ASSERT(offsetof(sci_register_t, FLR) == 0x1C, sci_register_t_size_mismatch);
 STATIC_ASSERT(offsetof(sci_register_t, IODFTCTRL) == 0x90, sci_register_t_size_mismatch);
 
-extern sci_register_t* const sciREG;
+sci_register_t* const sciREG = (sci_register_t*)(uintptr_t)(0xFFF7E500U);
+sci_register_t* const scilinREG = (sci_register_t*)(uintptr_t)(0xFFF7E400U);
 
-void SCI_SetLoopback(sci_loopback_t mode);
-
-void SCI_SetBaudRate(uint32_t rate);
+void SCI_Init();
+uint32_t SCI_GetFlags(sci_register_t* reg);
+void SCI_SyncTransmitByte(sci_register_t* reg, uint8_t data);
+uint8_t SCI_SyncReceiveByte(sci_register_t* reg);
+void SCI_SetLoopback(sci_register_t* reg, sci_loopback_t mode);
+void SCI_SetBaudRate(sci_register_t* reg, uint32_t rate);
 
 #ifdef __cplusplus
 }

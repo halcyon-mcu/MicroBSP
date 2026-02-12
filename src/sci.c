@@ -25,12 +25,12 @@
 
 void SCI_SetBaudRate(sci_register_t* reg, uint32_t rate) {
 	const float vclk = 8.0e6f; // 8 MHz
-	const uint32_t f = (sciREG->GCR1 & SCIGCR1_ASYNC) ? 16U : 1U;
+	const uint32_t f = (reg->GCR1 & SCIGCR1_ASYNC) ? 16U : 1U;
 
 	const float divisor = (vclk / (f * rate)) - 1.0f;
 	const uint32_t brs = (uint32_t)(floorf(divisor + 0.5f)) & 0x00FFFFFFU;
 
-	sciREG->BRS = brs;
+	reg->BRS = brs;
 }
 
 static void initReg(sci_register_t* reg) {
@@ -47,7 +47,7 @@ static void initReg(sci_register_t* reg) {
 		SCIGCR1_TXENA |
 		SCIGCR1_RXENA |
 		SCIGCR1_CLOCK |
-		SCIGCR1_STOPBITS(1) |
+		SCIGCR1_STOPBITS(2) |
 		SCIGCR1_PARITY_DISABLED |
 		SCIGCR1_ASYNC;
 	/* clang-format on */

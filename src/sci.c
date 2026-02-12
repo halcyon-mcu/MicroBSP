@@ -23,7 +23,7 @@
 #define SCIGCR1_PARITY_ENABLED (1U << 2U)
 #define SCIGCR1_PARITY_DISABLED (0U << 2U)
 
-void SCI_SetBaudRate(uint32_t rate) {
+void SCI_SetBaudRate(sci_register_t* reg, uint32_t rate) {
 	const float vclk = 8.0e6f; // 8 MHz
 	const uint32_t f = (sciREG->GCR1 & SCIGCR1_ASYNC) ? 16U : 1U;
 
@@ -31,6 +31,60 @@ void SCI_SetBaudRate(uint32_t rate) {
 	const uint32_t brs = (uint32_t)(floorf(divisor + 0.5f)) & 0x00FFFFFFU;
 
 	sciREG->BRS = brs;
+}
+
+static void initReg(sci_register_t* reg) {
+	// Bring out of reset
+	reg->GCR0 = 0;
+	reg->GCR0 = 1;
+
+	// Disable all interrupts
+	reg->CLEARINT = 0xFFFFFFFFU;
+	reg->CLEARINTLVL = 0xFFFFFFFFU;
+
+	/* clang-format off */
+	reg->GCR1 =
+		SCIGCR1_TXENA |
+		SCIGCR1_RXENA |
+		SCIGCR1_CLOCK |
+		SCIGCR1_STOPBITS(1) |
+		SCIGCR1_PARITY_DISABLED |
+		SCIGCR1_ASYNC;
+	/* clang-format on */
+
+	// Set baudrate
+	reg->BRS = 715U;
+
+	// Set length
+	reg->FORMAT = 8U - 1U; // 8 bits
+
+	// todo: allow users to configure this
+	// VCLK = 8MHz
+	// SCICLK = VCLK / (P + 1 + M/16)
+	// Target SCICLK = 115200
+	// M = 5, P = 3
+	// = ~ 115900 (small enough error for 115200 baud)
+	// setBaudRatePrescalers(3, 5);
+
+	// Enable SCI pins for tx and rx instead of GIO
+	reg->PIO0 = (1U << 2U) | (1U << 1U); // tx and rx pin functional mode
+
+	// Set SCI pins default output value
+	reg->PIO3 = 0U;
+
+	// Set SCI pins output direction
+	reg->PIO1 = 0U;
+
+	// Set SCI pins open drain enable
+	reg->PIO6 = 0U;
+
+	// Set SCI pins pullup/pulldown enable
+	reg->PIO7 = 0U;
+
+	// Set SCI pins pullup/pulldown select
+	reg->PIO8 = (1U << 2U) | (1U << 1U);
+
+	reg->GCR1 |= SCIGCR1_SWNRST;
 }
 
 void SCI_Init() {
@@ -42,61 +96,11 @@ void SCI_Init() {
 	// Set PS[6] to power on all quadrants of SCI (enable clk)
 	// PCR_ClearPowerDown(6, 0b1111);
 
-	// Bring out of reset
-	sciREG->GCR0 = 0;
-	sciREG->GCR0 = 1;
-
-	// Disable all interrupts
-	sciREG->CLEARINT = 0xFFFFFFFFU;
-	sciREG->CLEARINTLVL = 0xFFFFFFFFU;
-
-	/* clang-format off */
-	sciREG->GCR1 =
-		SCIGCR1_TXENA |
-		SCIGCR1_RXENA |
-		SCIGCR1_CLOCK |
-		SCIGCR1_STOPBITS(1) |
-		SCIGCR1_PARITY_DISABLED |
-		SCIGCR1_ASYNC;
-	/* clang-format on */
-
-	// Set baudrate
-	sciREG->BRS = 715U;
-
-	// Set length
-	sciREG->FORMAT = 8U - 1U; // 8 bits
-
-	// todo: allow users to configure this
-	// VCLK = 8MHz
-	// SCICLK = VCLK / (P + 1 + M/16)
-	// Target SCICLK = 115200
-	// M = 5, P = 3
-	// = ~ 115900 (small enough error for 115200 baud)
-	// setBaudRatePrescalers(3, 5);
-
-	// Enable SCI pins for tx and rx instead of GIO
-	sciREG->PIO0 = (1U << 2U) | (1U << 1U); // tx and rx pin functional mode
-
-	// Set SCI pins default output value
-	sciREG->PIO3 = 0U;
-
-	// Set SCI pins output direction
-	sciREG->PIO1 = 0U;
-
-	// Set SCI pins open drain enable
-	sciREG->PIO6 = 0U;
-
-	// Set SCI pins pullup/pulldown enable
-	sciREG->PIO7 = 0U;
-
-	// Set SCI pins pullup/pulldown select
-	sciREG->PIO8 = (1U << 2U) | (1U << 1U);
-
-	sciREG->GCR1 |= SCIGCR1_SWNRST;
+	initReg(sciREG);
 }
 
-uint32_t SCI_GetFlags() {
-	return sciREG->FLR;
+uint32_t SCI_GetFlags(sci_register_t* reg) {
+	return reg->FLR;
 }
 
 // Get the raw flags from SCI. Mostly meant for internal use.
@@ -133,20 +137,20 @@ void SCI_SyncTransmitByte(sci_register_t* reg, uint8_t data) {
 
 /// - Analog: Routes SCITX through SCIRX and uses that
 /// - Digital: Entirely bypasses the pins and routes internally
-void SCI_SetLoopback(sci_loopback_t mode) {
+void SCI_SetLoopback(sci_register_t* reg, sci_loopback_t mode) {
 	if (mode == SCI_LOOPBACK_DISABLE) {
-		sciREG->IODFTCTRL = 0x00000500U;
+		reg->IODFTCTRL = 0x00000500U;
 	} else if (mode == SCI_LOOPBACK_ANALOG) {
-		sciREG->IODFTCTRL = (0xA00U | 2U);
+		reg->IODFTCTRL = (0xA00U | 2U);
 	} else if (mode == SCI_LOOPBACK_DIGITAL) {
-		sciREG->IODFTCTRL = 0xA00U;
+		reg->IODFTCTRL = 0xA00U;
 	}
 }
 
-uint8_t SCI_SyncReceiveByte() {
-	while (!isReceiveReady()) {
+uint8_t SCI_SyncReceiveByte(sci_register_t* reg) {
+	while (!isReceiveReady(reg)) {
 		// Wait
 	}
 
-	return readByte();
+	return readByte(reg);
 }

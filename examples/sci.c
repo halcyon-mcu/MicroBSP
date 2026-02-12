@@ -24,8 +24,8 @@ int main() {
 		GPIO_SetHigh(GPIOB_2, high);
 		high = !high;
 
-		SCI_SyncTransmitByte('A');
-		SCI_SyncTransmitByte('B');
+		SCI_SyncTransmitByte(sciREG, 'A');
+		SCI_SyncTransmitByte(sciREG, 'B');
 
 		for (i = 0; i < 1000000; i++) {
 			// yeah

@@ -30,10 +30,12 @@ static void initPLL() {
 		// Wait for PLL1 to disable
 	}
 
+	sys1REG->GLBSTAT = 0x301U;
+
 	sys1REG->PLLCTL1 = PLLCTL_REFCLKDIV(1) | // f_intclk = f_oscin / 1
-					   PLLCTL_PLLMUL(45) |	 // f_vcoclk = f_intclk * 45
-					   PLLCTL_PLLDIV(2) |	 // f_pllclk = f_postodclk / 2
-					   PLLCTL_RESET_ON_FAIL_ENA | PLLCTL_MASK_SLIP_ENA;
+						PLLCTL_PLLMUL(45) |	 // f_vcoclk = f_intclk * 45
+						PLLCTL_PLLDIV(2) |	 // f_pllclk = f_postodclk / 2
+						PLLCTL_RESET_ON_FAIL_ENA | PLLCTL_MASK_SLIP_ENA;
 
 	sys1REG->PLLCTL2 = PLLCTL2_ODPLL(2); // f_postodclk = f_vcoclk / 2
 

@@ -68,24 +68,20 @@ static void initReg(sci_register_t* reg) {
 
 	// Enable SCI pins for tx and rx instead of GIO
 	reg->PIO0 = (1U << 2U) | (1U << 1U); // tx and rx pin functional mode
-
-	// Set SCI pins default output value
-	reg->PIO3 = 0U;
-
-	// Set SCI pins output direction
-	reg->PIO1 = 0U;
-
-	// Set SCI pins open drain enable
-	reg->PIO6 = 0U;
-
-	// Set SCI pins pullup/pulldown enable
-	reg->PIO7 = 0U;
-
-	// Set SCI pins pullup/pulldown select
-	reg->PIO8 = (1U << 2U) | (1U << 1U);
+	reg->PIO3 = 0U; // Set SCI pins default output value
+	reg->PIO1 = 0U; // Set SCI pins output direction
+	reg->PIO6 = 0U; // Set SCI pins open drain enable
+	reg->PIO7 = 0U; // Set SCI pins pullup/pulldown enable
+	reg->PIO8 = (1U << 2U) | (1U << 1U); // Set SCI pins pullup/pulldown select
 
 	reg->GCR1 |= SCIGCR1_SWNRST;
 }
+
+#define PINMUX_PIN_38_SHIFT 16U
+#define PINMUX_PIN_39_SHIFT 0U
+
+#define PINMUX_PIN_38_SCIRX (0x2U << PINMUX_PIN_38_SHIFT)
+#define PINMUX_PIN_39_SCITX (0x2U << PINMUX_PIN_39_SHIFT)
 
 void SCI_Init() {
 	IOMM_UnlockPinMMR();
@@ -97,6 +93,7 @@ void SCI_Init() {
 	// PCR_ClearPowerDown(6, 0b1111);
 
 	initReg(sciREG);
+	initReg(scilinREG);
 }
 
 uint32_t SCI_GetFlags(sci_register_t* reg) {

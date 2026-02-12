@@ -25,7 +25,7 @@ int main() {
 		high = !high;
 
 		SCI_SyncTransmitByte(sciREG, 'A');
-		SCI_SyncTransmitByte(sciREG, 'B');
+		SCI_SyncTransmitByte(scilinREG, 'B');
 
 		for (i = 0; i < 1000000; i++) {
 			// yeah

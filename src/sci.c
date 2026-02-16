@@ -23,16 +23,6 @@
 #define SCIGCR1_PARITY_ENABLED (1U << 2U)
 #define SCIGCR1_PARITY_DISABLED (0U << 2U)
 
-void SCI_SetBaudRate(sci_register_t* reg, uint32_t rate) {
-	const float vclk = 8.0e6f; // 8 MHz
-	const uint32_t f = (reg->GCR1 & SCIGCR1_ASYNC) ? 16U : 1U;
-
-	const float divisor = (vclk / (f * rate)) - 1.0f;
-	const uint32_t brs = (uint32_t)(floorf(divisor + 0.5f)) & 0x00FFFFFFU;
-
-	reg->BRS = brs;
-}
-
 static void initReg(sci_register_t* reg) {
 	// Bring out of reset
 	reg->GCR0 = 0;

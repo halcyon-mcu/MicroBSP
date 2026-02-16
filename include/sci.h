@@ -65,7 +65,6 @@ uint32_t SCI_GetFlags(sci_register_t* reg);
 void SCI_SyncTransmitByte(sci_register_t* reg, uint8_t data);
 uint8_t SCI_SyncReceiveByte(sci_register_t* reg);
 void SCI_SetLoopback(sci_register_t* reg, sci_loopback_t mode);
-void SCI_SetBaudRate(sci_register_t* reg, uint32_t rate);
 
 #ifdef __cplusplus
 }

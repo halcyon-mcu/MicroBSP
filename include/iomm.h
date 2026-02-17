@@ -24,12 +24,14 @@ typedef struct {
 	volatile uint32_t FAULT_ADDRESS_REG;	  // F4h
 	volatile uint32_t FAULT_STATUS_REG;		  // F8h
 	volatile uint32_t FAULT_CLEAR_REG;		  // FCh
-	volatile uint32_t RESERVED5[644];		  // 100h-B0Ch
-	volatile uint32_t PINMMR[48];			  // B10h-BCCh
+	volatile uint32_t RESERVED5[4];			  // 100h-10Ch
+	volatile uint32_t PINMMR[48];			  // 110h-1CCh
 } iomm_register_t;
 
 STATIC_ASSERT(offsetof(iomm_register_t, REVISION_REG) == 0x00, iomm_register_t_size_mismatch);
 STATIC_ASSERT(offsetof(iomm_register_t, ENDIAN_REG) == 0x20, iomm_register_t_size_mismatch);
+STATIC_ASSERT(offsetof(iomm_register_t, KICK_REG0) == 0x38, iomm_register_t_size_mismatch);
+STATIC_ASSERT(offsetof(iomm_register_t, PINMMR) == 0x110, iomm_register_t_size_mismatch);
 
 extern iomm_register_t* const iommREG;
 

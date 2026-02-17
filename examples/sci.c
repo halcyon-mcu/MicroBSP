@@ -9,7 +9,10 @@
 
 int main() {
 	GPIO_Init();
-	SCI_Init(&(sci_config_t){.sciLoopback = SCI_LOOPBACK_ANALOG, .scilinLoopback = SCI_LOOPBACK_DISABLE});
+	SCI_Init(&(sci_config_t){
+		.sciLoopback = SCI_LOOPBACK_DISABLE,
+		.scilinLoopback = SCI_LOOPBACK_DISABLE,
+	});
 
 	GPIO_SetDirection(GPIOB_1, GPIO_DIR_OUTPUT);
 	GPIO_SetOpenDrain(GPIOB_1, false);

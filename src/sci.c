@@ -37,7 +37,7 @@ static void initReg(sci_register_t* reg, sci_loopback_t loopback) {
 		SCIGCR1_TXENA |
 		SCIGCR1_RXENA |
 		SCIGCR1_CLOCK |
-		SCIGCR1_STOPBITS(2) |
+		SCIGCR1_STOPBITS(1) |
 		SCIGCR1_PARITY_DISABLED |
 		SCIGCR1_ASYNC;
 	/* clang-format on */

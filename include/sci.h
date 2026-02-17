@@ -57,10 +57,15 @@ STATIC_ASSERT(offsetof(sci_register_t, PIO7) == 0x58, sci_register_t_size_mismat
 STATIC_ASSERT(offsetof(sci_register_t, FLR) == 0x1C, sci_register_t_size_mismatch);
 STATIC_ASSERT(offsetof(sci_register_t, IODFTCTRL) == 0x90, sci_register_t_size_mismatch);
 
-#define sciREG    ((sci_register_t*)0xFFF7E500U)
+#define sciREG ((sci_register_t*)0xFFF7E500U)
 #define scilinREG ((sci_register_t*)0xFFF7E400U)
 
-void SCI_Init();
+typedef struct {
+	sci_loopback_t sciLoopback;
+	sci_loopback_t scilinLoopback;
+} sci_config_t;
+
+void SCI_Init(sci_config_t* config);
 uint32_t SCI_GetFlags(sci_register_t* reg);
 void SCI_SyncTransmitByte(sci_register_t* reg, uint8_t data);
 uint8_t SCI_SyncReceiveByte(sci_register_t* reg);

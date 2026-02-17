@@ -23,7 +23,7 @@
 #define SCIGCR1_PARITY_ENABLED (1U << 2U)
 #define SCIGCR1_PARITY_DISABLED (0U << 2U)
 
-static void initReg(sci_register_t* reg) {
+static void initReg(sci_register_t* reg, sci_loopback_t loopback) {
 	// Bring out of reset
 	reg->GCR0 = 0;
 	reg->GCR0 = 1;
@@ -47,6 +47,8 @@ static void initReg(sci_register_t* reg) {
 
 	// Set length
 	reg->FORMAT = 8U - 1U; // 8 bits
+
+	SCI_SetLoopback(reg, loopback);
 
 	// todo: allow users to configure this
 	// VCLK = 8MHz
@@ -73,17 +75,14 @@ static void initReg(sci_register_t* reg) {
 #define PINMUX_PIN_38_SCIRX (0x2U << PINMUX_PIN_38_SHIFT)
 #define PINMUX_PIN_39_SCITX (0x2U << PINMUX_PIN_39_SHIFT)
 
-void SCI_Init() {
+void SCI_Init(sci_config_t* config) {
 	IOMM_UnlockPinMMR();
 	iommREG->PINMMR[7] = (1 << 17); // Set N2HET1[06] to SCIRX
-	iommREG->PINMMR[8] = (1 << 1); // Set N2HET1[13] to SCITX
+	iommREG->PINMMR[8] = (1 << 1);	// Set N2HET1[13] to SCITX
 	IOMM_LockPinMMR();
 
-	// Set PS[6] to power on all quadrants of SCI (enable clk)
-	// PCR_ClearPowerDown(6, 0b1111);
-
-	initReg(sciREG);
-	initReg(scilinREG);
+	initReg(sciREG, config->sciLoopback);
+	initReg(scilinREG, config->scilinLoopback);
 }
 
 uint32_t SCI_GetFlags(sci_register_t* reg) {

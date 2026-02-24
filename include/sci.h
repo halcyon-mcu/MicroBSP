@@ -67,8 +67,13 @@ typedef struct {
 
 void SCI_Init(sci_config_t* config);
 uint32_t SCI_GetFlags(sci_register_t* reg);
+
 void SCI_SyncTransmitByte(sci_register_t* reg, uint8_t data);
+void SCI_SyncTransmitBytes(sci_register_t* reg, const uint8_t* data, size_t length);
+void SCI_SyncTransmitStr(sci_register_t* reg, const char* data);
+
 uint8_t SCI_SyncReceiveByte(sci_register_t* reg);
+
 void SCI_SetLoopback(sci_register_t* reg, sci_loopback_t mode);
 
 #ifdef __cplusplus

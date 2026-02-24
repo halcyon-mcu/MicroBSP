@@ -121,6 +121,19 @@ void SCI_SyncTransmitByte(sci_register_t* reg, uint8_t data) {
 	writeByte(reg, data);
 }
 
+void SCI_SyncTransmitBytes(sci_register_t* reg, const uint8_t* data, size_t length) {
+	for (size_t i = 0; i < length; i++) {
+		SCI_SyncTransmitByte(reg, data[i]);
+	}
+}
+
+void SCI_SyncTransmitStr(sci_register_t* reg, const char* str) {
+	while (*str != '\0') {
+		SCI_SyncTransmitByte(reg, (uint8_t)(*str));
+		str++;
+	}
+}
+
 /// - Analog: Routes SCITX through SCIRX and uses that
 /// - Digital: Entirely bypasses the pins and routes internally
 void SCI_SetLoopback(sci_register_t* reg, sci_loopback_t mode) {

@@ -60,10 +60,10 @@ static void initReg(sci_register_t* reg, sci_loopback_t loopback) {
 
 	// Enable SCI pins for tx and rx instead of GIO
 	reg->PIO0 = (1U << 2U) | (1U << 1U); // tx and rx pin functional mode
-	reg->PIO3 = 0U; // Set SCI pins default output value
-	reg->PIO1 = 0U; // Set SCI pins output direction
-	reg->PIO6 = 0U; // Set SCI pins open drain enable
-	reg->PIO7 = 0U; // Set SCI pins pullup/pulldown enable
+	reg->PIO3 = 0U;						 // Set SCI pins default output value
+	reg->PIO1 = 0U;						 // Set SCI pins output direction
+	reg->PIO6 = 0U;						 // Set SCI pins open drain enable
+	reg->PIO7 = 0U;						 // Set SCI pins pullup/pulldown enable
 	reg->PIO8 = (1U << 2U) | (1U << 1U); // Set SCI pins pullup/pulldown select
 
 	reg->GCR1 |= SCIGCR1_SWNRST;

@@ -33,7 +33,7 @@ STATIC_ASSERT(offsetof(iomm_register_t, ENDIAN_REG) == 0x20, iomm_register_t_siz
 STATIC_ASSERT(offsetof(iomm_register_t, KICK_REG0) == 0x38, iomm_register_t_size_mismatch);
 STATIC_ASSERT(offsetof(iomm_register_t, PINMMR) == 0x110, iomm_register_t_size_mismatch);
 
-extern iomm_register_t* const iommREG;
+#define iommREG ((iomm_register_t*)(uintptr_t)(0xFFFFEA00))
 
 void IOMM_UnlockPinMMR();
 void IOMM_LockPinMMR();

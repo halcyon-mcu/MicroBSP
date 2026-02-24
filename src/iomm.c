@@ -1,7 +1,5 @@
 #include "iomm.h"
 
-iomm_register_t* const iommREG = (iomm_register_t*)(uintptr_t)(0xFFFFEA00);
-
 void IOMM_UnlockPinMMR() {
 	iommREG->KICK_REG0 = 0x83E70B13U;
 	iommREG->KICK_REG1 = 0x95A4F1E0U;

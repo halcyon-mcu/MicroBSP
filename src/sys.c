@@ -32,14 +32,14 @@ static void initPLL() {
 
 	sys1REG->GLBSTAT = 0x301U;
 
-	sys1REG->PLLCTL1 = PLLCTL_REFCLKDIV(1) | // f_intclk = f_oscin / 1
-						PLLCTL_PLLMUL(45) |	 // f_vcoclk = f_intclk * 45
-						PLLCTL_PLLDIV(2) |	 // f_pllclk = f_postodclk / 2
-						PLLCTL_RESET_ON_FAIL_ENA | PLLCTL_MASK_SLIP_ENA;
+	sys1REG->PLLCTL1 = PLLCTL_REFCLKDIV(6) | // f_intclk = f_oscin / 6
+					   PLLCTL_PLLMUL(165) |	 // f_vcoclk = f_intclk * 165
+					   PLLCTL_PLLDIV(1) |	 // f_pllclk = f_postodclk / 1
+					   PLLCTL_RESET_ON_FAIL_ENA | PLLCTL_MASK_SLIP_ENA;
 
 	sys1REG->PLLCTL2 = PLLCTL2_ODPLL(2); // f_postodclk = f_vcoclk / 2
 
-	// f_pllclk = 180MHz
+	// PLL = 220MHz
 
 	// Enable PLL1
 	sys1REG->CSDISCLR = 1 << CLKSRC_PLL1_OFFSET;

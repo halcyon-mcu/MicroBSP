@@ -9,6 +9,7 @@
 
 int main() {
 	GPIO_Init();
+
 	SCI_Init(&(sci_config_t){
 		.sciLoopback = SCI_LOOPBACK_DISABLE,
 		.scilinLoopback = SCI_LOOPBACK_DISABLE,
@@ -26,12 +27,13 @@ int main() {
 		GPIO_SetHigh(GPIOB_2, high);
 		high = !high;
 
-		SCI_SyncTransmitByte(sciREG, 'A');
+		SCI_SyncTransmitByte(scilinREG, 'L');
+		SCI_SyncTransmitByte(sciREG, 'S');
 
-		char c = sciREG->RD;
-		if (c == 'A') {
-			GPIO_SetHigh(GPIOB_1, true);
-		}
+		// char c = sciREG->RD;
+		// if (c == 'A') {
+		// 	GPIO_SetHigh(GPIOB_1, true);
+		// }
 
 		for (i = 0; i < 1000000; i++) {
 			// yeah

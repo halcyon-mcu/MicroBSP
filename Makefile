@@ -2,6 +2,8 @@
 SRC_DIR = src
 INC_DIR = include
 EXAMPLES_DIR = examples
+TESTS_DIR = tests
+TEST_FRAMEWORK_DIR = test-framework
 BUILD_DIR = build
 LINKER_SCRIPT = linker/rm4x.ld
 
@@ -59,7 +61,19 @@ endif
 	$(CC) $(CFLAGS) $(LDFLAGS) $(EXAMPLES_DIR)/$(EXAMPLE).c $(LIB_TARGET) -o $(BUILD_DIR)/$(EXAMPLE).elf
 	$(OBJCOPY) -O binary $(BUILD_DIR)/$(EXAMPLE).elf $(BUILD_DIR)/$(EXAMPLE).bin
 
+# Build and flash the test suite: make test
+TEST_FRAMEWORK_SRC = $(wildcard $(TEST_FRAMEWORK_DIR)/src/*.c)
+TEST_CFLAGS = $(CFLAGS) -I$(TEST_FRAMEWORK_DIR)/include
+
+test: $(LIB_TARGET)
+	$(CC) $(TEST_CFLAGS) $(LDFLAGS) \
+		$(TESTS_DIR)/tests.c \
+		$(TEST_FRAMEWORK_SRC) \
+		$(LIB_TARGET) \
+		-o $(BUILD_DIR)/tests.elf
+	$(OBJCOPY) -O binary $(BUILD_DIR)/tests.elf $(BUILD_DIR)/tests.bin
+
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: lib example clean debug
+.PHONY: lib example test clean debug
